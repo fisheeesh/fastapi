@@ -112,6 +112,23 @@ def submit_shipment(weight: float, body: dict[str, str]) -> dict[str, Any]:
     return {"id": new_id}
 
 
+@app.put("/shipment")
+# @app.patch("/shipment")
+def shipment_update(
+    id: int, content: str, weight: float, statuss: str
+) -> dict[str, Any]:
+    
+    if weight > 25:
+        raise HTTPException(
+            status_code=status.HTTP_406_NOT_ACCEPTABLE,
+            detail="Maximun weight limit is 25 kgs",
+        )
+    
+    shipments[id] = {"content": content, "weight": weight, "status": statuss}
+
+    return shipments[id]
+
+
 @app.get("/scalar", include_in_schema=False)
 def get_scalar_docs():
     return get_scalar_api_reference(openapi_url=app.openapi_url, title="Scalar API")
