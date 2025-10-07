@@ -1,4 +1,4 @@
-from fastapi import FastAPI  # type: ignore
+from fastapi import FastAPI, HTTPException, status  # type: ignore
 from scalar_fastapi import get_scalar_api_reference  # type: ignore
 from typing import Any
 
@@ -60,13 +60,16 @@ def get_shipment(id: int) -> dict[str, Any]:
 
 # * in fastapi accepting query para, it is enough just pass the qPara in route handle func
 @app.get("/shipments")
-def get_shipment_by_id(id: int | None = None) -> dict[str, Any]:
+def get_shipment_by_id(id: int) -> dict[str, Any]:
     if not id:
         id = max(shipments.keys())
         return shipments[id]
 
     if id not in shipments:
-        return {"details": "Given id doesn't exit!"}
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Given id doesn't exist!"
+        )
 
     return shipments[id]
 
