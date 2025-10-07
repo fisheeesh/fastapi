@@ -73,12 +73,31 @@ def get_shipment_by_id(id: int) -> dict[str, Any]:
     return shipments[id]
 
 
+# * Accept with query params
+# @app.post("/shipment")
+# def submit_shipment(content: str, weight: float) -> dict[str, int]:
+#     if weight > 25:
+#         raise HTTPException(
+#             status_code=status.HTTP_406_NOT_ACCEPTABLE,
+#             detail="Maximum weight limit is 25 kgs",
+#         )
+
+#     new_id = max(shipments.keys()) + 1
+
+#     shipments[new_id] = {"content": content, "weight": weight, "status": "placed"}
+#     return {"id": new_id}
+
+
+# * Accept with body
 @app.post("/shipment")
-def submit_shipment(content: str, weight: float) -> dict[str, int]:
+def submit_shipment(weight: float, body: dict[str, str]) -> dict[str, Any]:
+    content = body["content"]
+    # weight = body["weight"]
+
     if weight > 25:
         raise HTTPException(
             status_code=status.HTTP_406_NOT_ACCEPTABLE,
-            detail="Maximum weight limit is 25 kgs",
+            detail="Maximun weight limit is 25 kgs",
         )
 
     new_id = max(shipments.keys()) + 1
