@@ -58,6 +58,19 @@ def get_shipment(id: int) -> dict[str, Any]:
     return shipments[id]
 
 
+# * in fastapi accepting query para, it is enough just pass the qPara in route handle func
+@app.get("/shipments")
+def get_shipment_by_id(id: int | None = None) -> dict[str, Any]:
+    if not id:
+        id = max(shipments.keys())
+        return shipments[id]
+
+    if id not in shipments:
+        return {"details": "Given id doesn't exit!"}
+
+    return shipments[id]
+
+
 @app.get("/scalar", include_in_schema=False)
 def get_scalar_docs():
     return get_scalar_api_reference(openapi_url=app.openapi_url, title="Scalar API")
