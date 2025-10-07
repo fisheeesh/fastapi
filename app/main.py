@@ -1,5 +1,5 @@
-from fastapi import FastAPI # pyright: ignore[reportMissingImports]
-from scalar_fastapi import get_scalar_api_reference # pyright: ignore[reportMissingImports]
+from fastapi import FastAPI # type: ignore
+from scalar_fastapi import get_scalar_api_reference # type: ignore
 
 app = FastAPI()
 
