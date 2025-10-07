@@ -113,18 +113,61 @@ def submit_shipment(weight: float, body: dict[str, str]) -> dict[str, Any]:
 
 
 @app.put("/shipment")
-# @app.patch("/shipment")
 def shipment_update(
     id: int, content: str, weight: float, statuss: str
 ) -> dict[str, Any]:
-    
     if weight > 25:
         raise HTTPException(
             status_code=status.HTTP_406_NOT_ACCEPTABLE,
             detail="Maximun weight limit is 25 kgs",
         )
-    
+
     shipments[id] = {"content": content, "weight": weight, "status": statuss}
+
+    return shipments[id]
+
+
+# * with query params
+# @app.patch("/shipment")
+# def patch_shipment(
+#     id: int,
+#     content: str | None = None,
+#     weight: float | None = None,
+#     statuss: str | None = None,
+# ) -> dict[str, Any]:
+#     if weight is not None and weight > 25:
+#         raise HTTPException(
+#             status_code=status.HTTP_406_NOT_ACCEPTABLE,
+#             detail="Maximun weight limit is 25 kgs",
+#         )
+
+#     shipment = shipments[id]
+#     if content:
+#         shipment["content"] = content
+#     elif weight:
+#         shipment["weight"] = weight
+#     if statuss:
+#         shipment["status"] = statuss
+
+#     shipments[id] = shipment
+
+#     return shipments[id]
+
+
+# * with body
+@app.patch("/shipment")
+def patch_shipment(id: int, body: dict[str, Any]) -> dict[str, Any]:
+    # weight = body["weight"]
+
+    # if weight > 25:
+    #     raise HTTPException(
+    #         status_code=status.HTTP_406_NOT_ACCEPTABLE,
+    #         detail="Maximun weight limit is 25 kgs",
+    #     )
+
+    shipment = shipments[id]
+
+    shipment.update(body)
 
     return shipments[id]
 
