@@ -1,6 +1,7 @@
 from fastapi import FastAPI, HTTPException, status  # type: ignore
 from scalar_fastapi import get_scalar_api_reference  # type: ignore
 from typing import Any
+from enum import Enum
 
 from .schemas import Shipment
 
@@ -152,9 +153,16 @@ def shipment_update(
 #     return shipments[id]
 
 
+class ShipmentStatus(str, Enum):
+    placed = "placed"
+    in_transit = "in_transit"
+    out_for_delivery = "out_for_delivery"
+    delivered = "delivered"
+
+
 # * with body
 @app.patch("/shipment")
-def patch_shipment(id: int, body: dict[str, Any]) -> dict[str, Any]:
+def patch_shipment(id: int, body: dict[str, ShipmentStatus]) -> dict[str, Any]:
     # weight = body["weight"]
 
     # if weight > 25:
