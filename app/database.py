@@ -6,24 +6,23 @@ from typing import Any
 class Database:
     def __init__(self):
         # * Make the connection with db
-        self.conn = sqlite3.connect("sqlite.db")
+        self.conn = sqlite3.connect("sqlite.db", check_same_thread=False)
         #  * Get cursor to execute queries and fetch data
         self.cur = self.conn.cursor()
         # * Create table if not exits
-        self.create_table("shipment")
+        self.create_table()
 
-    def create_table(self, name: str):
+    def create_table(self):
         # * 1. Create a table
         self.cur.execute(
             """
-            CREATE TABLE IF NOT EXISTS ? (
+            CREATE TABLE IF NOT EXISTS shipment (
                 id INTEGER PRIMARY KEY,
                 content TEXT,
                 weight REAL,
                 status TEXT
                 )
             """,
-            (name,),
         )
 
     def create(self, shipment: ShipmentCreate) -> int:
@@ -57,15 +56,19 @@ class Database:
             (id,),
         )
         row = self.cur.fetchone()
-        
-        return {
-            "id": row[0],
-            "content": row[1],
-            "weight": row[2],
-            "status": row[3],
-        } if row else None
 
-    def update(self, shipment: ShipmentUpdate) -> dict[str, Any]:
+        return (
+            {
+                "id": row[0],
+                "content": row[1],
+                "weight": row[2],
+                "status": row[3],
+            }
+            if row
+            else None
+        )
+
+    def update(self, id: int, shipment: ShipmentUpdate) -> dict[str, Any] | None:
         self.cur.execute(
             """
             UPDATE shipment SET status = :status

@@ -17,12 +17,11 @@ class ShipmentStatus(str, Enum):
 class BaseShipment(BaseModel):
     content: str
     weight: float = Field(le=25, ge=1)
-    destination: int
 
 
 class ShipmentRead(BaseShipment):
+    id: int
     status: ShipmentStatus
-    # events: list
 
 
 class Order(BaseModel):
@@ -32,7 +31,6 @@ class Order(BaseModel):
 
 
 class ShipmentCreate(BaseShipment):
-    # order: Order
     pass
 
 
