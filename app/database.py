@@ -1,16 +1,16 @@
 import sqlite3
 from .schemas import ShipmentCreate, ShipmentUpdate
 from typing import Any
+from contextlib import contextmanager
 
 
 class Database:
-    def __init__(self):
+    def connect_to_db(self):
         # * Make the connection with db
         self.conn = sqlite3.connect("sqlite.db", check_same_thread=False)
         #  * Get cursor to execute queries and fetch data
         self.cur = self.conn.cursor()
-        # * Create table if not exits
-        self.create_table()
+        print("connected to db...")
 
     def create_table(self):
         # * 1. Create a table
@@ -34,8 +34,8 @@ class Database:
 
         self.cur.execute(
             """
-            INSERT INTO shipment
-            VALUES  (:id, :content, :weight, :status)
+                INSERT INTO shipment
+                VALUES  (:id, :content, :weight, :status)
             """,
             {
                 "id": new_id,
@@ -73,7 +73,7 @@ class Database:
             """
             UPDATE shipment SET status = :status
             WHERE id = :id
-        """,
+            """,
             {"id": id, **shipment.model_dump()},
         )
         self.conn.commit()
@@ -85,10 +85,42 @@ class Database:
             """
             DELETE FROM shipment
             WHERE id = ?
-        """,
+            """,
             (id,),
         )
         self.conn.commit()
 
     def close(self):
+        print("...connection closed")
         self.conn.close()
+
+    # def __enter__(self):
+    #     print("enter the context")
+    #     self.connect_to_db()
+    #     self.create_table()
+    #     return self
+
+    # def __exit__(self, *arg):
+    #     print("exiting the context")
+    #     self.close()
+
+
+# ? Usage
+@contextmanager
+def managed_db():
+    db = Database()
+    # * setup
+    print("enter setup")
+    db.connect_to_db()
+    db.create_table()
+
+    yield db
+
+    # * dispose
+    print("exit the context")
+    db.close()
+
+
+with managed_db() as db:
+    print(db.get(12701))
+    print(db.get(12702))
