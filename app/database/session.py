@@ -5,5 +5,7 @@ engine = create_engine(
     url="sqlite:///sqlite.db", echo=True, connect_args={"check_same_thread": False}
 )
 
-from .models import Shipment
-SQLModel.metadata.create_all(bind=engine)
+
+def creaed_db_tables():
+    from .models import Shipment
+    SQLModel.metadata.create_all(bind=engine)

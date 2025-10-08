@@ -1,10 +1,20 @@
 from fastapi import FastAPI, HTTPException, status  # type: ignore
 from scalar_fastapi import get_scalar_api_reference  # type: ignore
+from app.database.session import creaed_db_tables
 
 from .schemas import ShipmentRead, ShipmentCreate, ShipmentUpdate
 from .database import Database
 
-app = FastAPI()
+from contextlib import asynccontextmanager
+
+
+@asynccontextmanager
+async def lifespan_hanlder(app: FastAPI):
+    creaed_db_tables()
+    yield
+
+
+app = FastAPI(lifespan=lifespan_hanlder)
 
 db = Database()
 
