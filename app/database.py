@@ -8,7 +8,7 @@ cursor = connection.cursor()
 cursor.execute(
     """
     CREATE TABLE IF NOT EXISTS shipment (
-        id INTEGER,
+        id INTEGER PRIMARY KEY,
         content TEXT,
         weight REAL,
         status TEXT
@@ -16,14 +16,17 @@ cursor.execute(
     """
 )
 
-# * 2. Add shipment data
-# cursor.execute(
-#     """
-#     INSERT INTO shipment
-#     VALUES  (12703, 'metal gears', 12, 'placed')
-#     """
-# )
+# cursor.execute("DROP TABLE shipment")
 # connection.commit()
+
+# * 2. Add shipment data
+cursor.execute(
+    """
+    INSERT INTO shipment
+    VALUES  (12701, 'metal gears', 12, 'placed')
+    """
+)
+connection.commit()
 
 # * 3. Read a shipment by id
 cursor.execute(
@@ -34,6 +37,15 @@ cursor.execute(
 )
 result = cursor.fetchone()
 print(result)
+
+# * 4. Delete a shipment by id
+# cursor.execute(
+#     """
+#         DELETE FROM shipment
+#         WHERE id = 12703
+#     """
+# )
+# connection.commit()
 
 # * Close the connection when done
 connection.close()
