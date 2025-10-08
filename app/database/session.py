@@ -1,22 +1,29 @@
-from sqlalchemy import create_engine  # type: ignore
-from sqlmodel import SQLModel, Session  # type: ignore
+from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession  # type: ignore
+from sqlalchemy.orm import sessionmarker  # type: ignore
+from sqlmodel import SQLModel  # type: ignore
 from typing import Annotated
-from fastapi import Depends # type: ignore
+from fastapi import Depends  # type: ignore
 
-engine = create_engine(
-    url="sqlite:///sqlite.db", echo=True, connect_args={"check_same_thread": False}
-)
+from app.config import settings
 
-
-def creaed_db_tables():
-    from app.schemas import Shipment  # noqa: F401
-
-    SQLModel.metadata.create_all(bind=engine)
+engine = create_async_engine(url=settings.POSTGRES_URL, echo=True)
 
 
-def get_session():
-    with Session(bind=engine) as session:
+async def creaed_db_tables():
+    async with engine.begin() as connection:
+        from .models import Shipment  # noqa: F401
+
+        await connection.run_sync(SQLModel.metadata.create_all)
+
+
+# * Session to interact with database
+async def get_session():
+    async_session = sessionmarker(
+        bind=engine, class_=AsyncSession, expire_on_commit=False
+    )
+    with async_session() as session:
         yield session
 
 
-SessionDep = Annotated[Session, Depends(get_session)]
+# * Session Dependency Annotation
+SessionDep = Annotated[AsyncSession, Depends(get_session)]
