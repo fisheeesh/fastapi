@@ -1,10 +1,10 @@
-from fastapi import FastAPI, HTTPException, status  # type: ignore
+from fastapi import FastAPI, HTTPException, Depends, status  # type: ignore
 from scalar_fastapi import get_scalar_api_reference  # type: ignore
-from app.database.session import creaed_db_tables
+from app.database.session import creaed_db_tables, get_session, Shipment
 
 from .schemas import ShipmentRead, ShipmentCreate, ShipmentUpdate
-from .database import Database
-
+from .db_helper import Database
+from sqlmodel import Session # type: ignore
 from contextlib import asynccontextmanager
 
 
@@ -21,8 +21,10 @@ db = Database()
 
 # * In fastapi accepting query para, it is enough just pass the qPara in route handle func
 @app.get("/shipment", response_model=ShipmentRead)
-def get_shipment_by_id(id: int):
-    shipment = db.get(id)
+def get_shipment_by_id(id: int, session: Session = Depends(get_session)):
+    shipment = session.get(Shipment, id)
+
+    
     if shipment is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Given id doesn't exist!"
@@ -33,7 +35,7 @@ def get_shipment_by_id(id: int):
 
 # * Accept with body
 @app.post("/shipment", response_model=None)
-def submit_shipment(shipment: ShipmentCreate) -> dict[str, int]:
+def submit_shipment(shipment: ShipmentCreate, session: Session = Depends(get_session)) -> dict[str, int]:
     new_id = db.create(shipment)
     return {"id": new_id}
 
