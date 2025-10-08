@@ -1,6 +1,7 @@
 from sqlmodel import Field, SQLModel  # type: ignore
 from enum import Enum
 from datetime import datetime
+from pydantic import EmailStr  # type: ignore
 
 # * We created sql model to define the data in the table that is the fields
 # * as our columns and our api schema
@@ -22,3 +23,12 @@ class Shipment(SQLModel, table=True):
     destination: int
     status: ShipmentStatus
     estimated_delivery: datetime
+
+
+class Seller(SQLModel, table=True):
+    __tablename__ = "seller"
+
+    id: int = Field(default=None, primary_key=True)
+    name: str
+    eamil: EmailStr
+    password_hash: str
