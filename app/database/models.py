@@ -1,4 +1,4 @@
-from sqlmodel import Field, SQLMOdel  # type: ignore
+from sqlmodel import Field, SQLModel  # type: ignore
 from enum import Enum
 from datetime import datetime
 
@@ -10,7 +10,7 @@ class ShipmentStatus(str, Enum):
     delivered = "delivered"
 
 
-class Shipment(SQLMOdel):
+class Shipment(SQLModel, table=True):
     __tablename__ = "shipment"
 
     id: int = Field(primary_key=True)
