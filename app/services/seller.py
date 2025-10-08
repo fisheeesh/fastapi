@@ -6,7 +6,7 @@ from passlib.context import CryptContext  # type: ignore
 password_context = CryptContext(schemes=["bcrypt"])
 
 
-class SellerSevice:
+class SellerService:
     def __init__(self, session: AsyncSession):
         self.session = session
 

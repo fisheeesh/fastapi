@@ -6,15 +6,15 @@ from app.api.schemas.shipment import (  # type: ignore
     ShipmentUpdate,
 )
 from app.database.models import Shipment
-from ..dependencies import ServiceDep
+from ..dependencies import ShipmentServiceDep
 
-# Remove dependencies=[ServiceDep] from here!
+# Remove dependencies=[ShipmentServiceDep] from here!
 router = APIRouter(prefix="/shipment", tags=["Shipment"])
 
 
 # * In fastapi accepting query para, it is enough just pass the qPara in route handle func
 @router.get("/", response_model=ShipmentRead)
-async def get_shipment_by_id(id: int, service: ServiceDep):  # type: ignore
+async def get_shipment_by_id(id: int, service: ShipmentServiceDep):  # type: ignore
     shipment = await service.get(id)
 
     if shipment is None:
@@ -29,7 +29,7 @@ async def get_shipment_by_id(id: int, service: ServiceDep):  # type: ignore
 @router.post("/")
 async def submit_shipment(
     shipment: ShipmentCreate,
-    service: ServiceDep,  # type: ignore
+    service: ShipmentServiceDep,  # type: ignore
 ) -> Shipment:
     return await service.add(shipment)
 
@@ -39,7 +39,7 @@ async def submit_shipment(
 async def patch_shipment(
     id: int,
     shipment_update: ShipmentUpdate,
-    service: ServiceDep,
+    service: ShipmentServiceDep,
 ):  # type: ignore
     update = shipment_update.model_dump(exclude_none=True)
 
@@ -54,7 +54,7 @@ async def patch_shipment(
 
 
 @router.delete("/")
-async def delete_shipment(id: int, service: ServiceDep) -> dict[str, str]:  # type: ignore
+async def delete_shipment(id: int, service: ShipmentServiceDep) -> dict[str, str]:  # type: ignore
     await service.delete(id)
 
     return {"detail": f"Shipment with id #{id} is deleted!"}

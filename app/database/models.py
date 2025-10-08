@@ -30,5 +30,5 @@ class Seller(SQLModel, table=True):
 
     id: int = Field(default=None, primary_key=True)
     name: str
-    eamil: EmailStr
+    email: EmailStr
     password_hash: str
