@@ -9,7 +9,7 @@ engine = create_engine(
 
 
 def creaed_db_tables():
-    from .models import Shipment  # noqa: F401
+    from app.schemas import Shipment  # noqa: F401
 
     SQLModel.metadata.create_all(bind=engine)
 

@@ -1,20 +1,26 @@
-from random import randint
-from pydantic import BaseModel, Field  # type: ignore
-from app.database.models import ShipmentStatus
 from datetime import datetime
+from random import randint
+
+from pydantic import BaseModel  # type: ignore
+from sqlmodel import SQLModel, Field  # type: ignore
+
+from app.database.models import ShipmentStatus
+
+# * For api schema, we used it for data validation in the request body and the response data
 
 
 def random_destination():
     return randint(11000, 11999)
 
 
-class BaseShipment(BaseModel):
+class BaseShipment(SQLModel):
     content: str
     weight: float = Field(le=25)
     destination: int
 
 
-class ShipmentRead(BaseShipment):
+class Shipment(BaseShipment, table=True):
+    id: int = Field(default=None, primary_key=True)
     status: ShipmentStatus
     estimated_delivery: datetime
 

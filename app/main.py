@@ -4,10 +4,10 @@ from datetime import datetime, timedelta
 from fastapi import FastAPI, HTTPException, status  # type: ignore
 from scalar_fastapi import get_scalar_api_reference  # type: ignore
 
-from app.database.models import Shipment, ShipmentStatus
+from app.database.models import ShipmentStatus
 from app.database.session import SessionDep, creaed_db_tables
 
-from .schemas import ShipmentCreate, ShipmentRead, ShipmentUpdate
+from .schemas import ShipmentCreate, Shipment, ShipmentUpdate
 
 
 @asynccontextmanager
@@ -20,7 +20,7 @@ app = FastAPI(lifespan=lifespan_hanlder)
 
 
 # * In fastapi accepting query para, it is enough just pass the qPara in route handle func
-@app.get("/shipment", response_model=ShipmentRead)
+@app.get("/shipment", response_model=Shipment)
 def get_shipment_by_id(id: int, session: SessionDep):  # type: ignore
     shipment = session.get(Shipment, id)
 
@@ -48,7 +48,7 @@ def submit_shipment(shipment: ShipmentCreate, session: SessionDep) -> dict[str, 
 
 
 # * with body
-@app.patch("/shipment", response_model=ShipmentRead)
+@app.patch("/shipment", response_model=Shipment)
 def patch_shipment(id: int, shipment_update: ShipmentUpdate, session: SessionDep):  # type: ignore
     update = shipment_update.model_dump(exclude_none=True)
 

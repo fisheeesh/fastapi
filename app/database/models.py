@@ -2,6 +2,9 @@ from sqlmodel import Field, SQLModel  # type: ignore
 from enum import Enum
 from datetime import datetime
 
+# * We created sql model to define the data in the table that is the fields
+# * as our columns and our api schema
+
 
 class ShipmentStatus(str, Enum):
     placed = "placed"
@@ -10,12 +13,12 @@ class ShipmentStatus(str, Enum):
     delivered = "delivered"
 
 
-class Shipment(SQLModel, table=True):
-    __tablename__ = "shipment"
+# class Shipment(SQLModel, table=True):
+#     __tablename__ = "shipment"
 
-    id: int = Field(default=None, primary_key=True)
-    content: str
-    weight: float = Field(le=25)
-    destination: int
-    status: ShipmentStatus
-    estimated_delivery: datetime
+#     id: int = Field(default=None, primary_key=True)
+#     content: str
+#     weight: float = Field(le=25)
+#     destination: int
+#     status: ShipmentStatus
+#     estimated_delivery: datetime
