@@ -44,7 +44,7 @@ async def patch_shipment(id: int, shipment_update: ShipmentUpdate, session: Sess
             status_code=status.HTTP_400_BAD_REQUEST, detail="No data provided to update"
         )
 
-    shipment = await ShipmentService(session).update(id, shipment_update)
+    shipment = await ShipmentService(session).update(id, update)
 
     return shipment
 

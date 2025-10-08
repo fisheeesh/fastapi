@@ -1,7 +1,6 @@
-from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession  # type: ignore
-from sqlalchemy.orm import sessionmarker  # type: ignore
+from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker  # type: ignore
 from sqlmodel import SQLModel  # type: ignore
-from typing import Annotated
+from typing import Annotated  # type: ignore
 from fastapi import Depends  # type: ignore
 
 from app.config import settings
@@ -9,7 +8,7 @@ from app.config import settings
 engine = create_async_engine(url=settings.POSTGRES_URL, echo=True)
 
 
-async def creaed_db_tables():
+async def created_db_tables():
     async with engine.begin() as connection:
         from .models import Shipment  # noqa: F401
 
@@ -18,10 +17,10 @@ async def creaed_db_tables():
 
 # * Session to interact with database
 async def get_session():
-    async_session = sessionmarker(
+    async_session = async_sessionmaker(
         bind=engine, class_=AsyncSession, expire_on_commit=False
     )
-    with async_session() as session:
+    async with async_session() as session:
         yield session
 
 
