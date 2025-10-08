@@ -22,11 +22,21 @@ class BaseShipment(BaseModel):
 
 class ShipmentRead(BaseShipment):
     status: ShipmentStatus
+    events: list
+
+
+class Order(BaseModel):
+    price: int
+    title: str
+    description: str
 
 
 class ShipmentCreate(BaseShipment):
-    pass
+    order: Order
 
 
 class ShipmentUpdate(BaseModel):
+    content: str | None = Field(default=None)
+    weight: float | None = Field(default=None, le=25, ge=1)
+    destination: int | None = Field(default=None)
     status: ShipmentStatus

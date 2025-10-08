@@ -2,7 +2,7 @@ from fastapi import FastAPI, HTTPException, status  # type: ignore
 from scalar_fastapi import get_scalar_api_reference  # type: ignore
 from typing import Any
 
-from .schemas import ShipmentRead, ShipmentCreate, ShipmentUpdate, ShipmentStatus
+from .schemas import ShipmentRead, ShipmentCreate, ShipmentUpdate
 
 app = FastAPI()
 
@@ -67,7 +67,7 @@ def get_shipment(id: int) -> dict[str, Any]:
 
 
 # * In fastapi accepting query para, it is enough just pass the qPara in route handle func
-@app.get("/shipment", response_model=ShipmentRead)
+@app.get("/shipment", response_model=None)
 def get_shipment_by_id(id: int):
     # if not id:
     #     id = max(shipments.keys())
@@ -97,14 +97,12 @@ def get_shipment_by_id(id: int):
 
 
 # * Accept with body
-@app.post("/shipment")
-def submit_shipment(body: ShipmentCreate) -> dict[str, int]:
+@app.post("/shipment", response_model=None)
+def submit_shipment(shipment: ShipmentCreate) -> dict[str, int]:
     new_id = max(shipments.keys()) + 1
 
     shipments[new_id] = {
-        "content": body.content,
-        "weight": body.weight,
-        "destination": body.destination,
+        **shipment.model_dump(),
         "status": "placed",
     }
     return {"id": new_id}
@@ -155,17 +153,15 @@ def shipment_update(
 # * with body
 @app.patch("/shipment", response_model=ShipmentRead)
 def patch_shipment(id: int, body: ShipmentUpdate):
-    # weight = body["weight"]
+    if id not in shipments:
+        raise HTTPException(status_code=404, detail="Shipment not found")
 
-    # if weight > 25:
-    #     raise HTTPException(
-    #         status_code=status.HTTP_406_NOT_ACCEPTABLE,
-    #         detail="Maximun weight limit is 25 kgs",
-    #     )
+    # Update the shipment
+    shipments[id].update(body.model_dump(exclude_none=True))
 
-    shipment = shipments[id]
-
-    shipment.update(body)
+    # Ensure events exists
+    if "events" not in shipments[id]:
+        shipments[id]["events"] = []
 
     return shipments[id]
 
