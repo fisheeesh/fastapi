@@ -2,7 +2,7 @@ from fastapi import FastAPI, HTTPException, status  # type: ignore
 from scalar_fastapi import get_scalar_api_reference  # type: ignore
 from typing import Any
 
-from .schemas import Shipment, ShipmentStatus
+from .schemas import ShipmentRead, ShipmentCreate, ShipmentUpdate, ShipmentStatus
 
 app = FastAPI()
 
@@ -67,7 +67,7 @@ def get_shipment(id: int) -> dict[str, Any]:
 
 
 # * In fastapi accepting query para, it is enough just pass the qPara in route handle func
-@app.get("/shipment", response_model=Shipment)
+@app.get("/shipment", response_model=ShipmentRead)
 def get_shipment_by_id(id: int):
     # if not id:
     #     id = max(shipments.keys())
@@ -98,7 +98,7 @@ def get_shipment_by_id(id: int):
 
 # * Accept with body
 @app.post("/shipment")
-def submit_shipment(body: Shipment) -> dict[str, int]:
+def submit_shipment(body: ShipmentCreate) -> dict[str, int]:
     new_id = max(shipments.keys()) + 1
 
     shipments[new_id] = {
@@ -153,8 +153,8 @@ def shipment_update(
 
 
 # * with body
-@app.patch("/shipment")
-def patch_shipment(id: int, body: dict[str, ShipmentStatus]) -> dict[str, Any]:
+@app.patch("/shipment", response_model=ShipmentRead)
+def patch_shipment(id: int, body: ShipmentUpdate):
     # weight = body["weight"]
 
     # if weight > 25:

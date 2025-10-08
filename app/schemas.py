@@ -14,13 +14,19 @@ class ShipmentStatus(str, Enum):
     delivered = "delivered"
 
 
-class Shipment(BaseModel):
-    content: str = Field(description="Contents of the shipment", max_length=30)
-    weight: float = Field(
-        description="Weight of the shipment in kilograms (kg)", le=25, ge=1
-    )
-    destination: int | None = Field(
-        description="Destination Zipcode. If not provided will be sent off to a random location",
-        default_factory=random_destination,
-    )
+class BaseShipment(BaseModel):
+    content: str
+    weight: float = Field(le=25, ge=1)
+    destination: int
+
+
+class ShipmentRead(BaseShipment):
+    status: ShipmentStatus
+
+
+class ShipmentCreate(BaseShipment):
+    pass
+
+
+class ShipmentUpdate(BaseModel):
     status: ShipmentStatus
