@@ -1,6 +1,7 @@
 from random import randint
 from pydantic import BaseModel, Field  # type: ignore
 from app.database.models import ShipmentStatus
+from datetime import datetime
 
 
 def random_destination():
@@ -9,18 +10,13 @@ def random_destination():
 
 class BaseShipment(BaseModel):
     content: str
-    weight: float = Field(le=25, ge=1)
+    weight: float = Field(le=25)
+    destination: int
 
 
 class ShipmentRead(BaseShipment):
-    id: int
     status: ShipmentStatus
-
-
-class Order(BaseModel):
-    price: int
-    title: str
-    description: str
+    estimated_delivery: datetime
 
 
 class ShipmentCreate(BaseShipment):
@@ -28,7 +24,5 @@ class ShipmentCreate(BaseShipment):
 
 
 class ShipmentUpdate(BaseModel):
-    content: str | None = Field(default=None)
-    weight: float | None = Field(default=None, le=25, ge=1)
-    destination: int | None = Field(default=None)
-    status: ShipmentStatus
+    status: ShipmentStatus | None = Field(default=None)
+    estimated_delivery: datetime | None = Field(default=None)
