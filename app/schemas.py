@@ -22,7 +22,7 @@ class BaseShipment(BaseModel):
 
 class ShipmentRead(BaseShipment):
     status: ShipmentStatus
-    events: list
+    # events: list
 
 
 class Order(BaseModel):
@@ -32,7 +32,8 @@ class Order(BaseModel):
 
 
 class ShipmentCreate(BaseShipment):
-    order: Order
+    # order: Order
+    pass
 
 
 class ShipmentUpdate(BaseModel):
