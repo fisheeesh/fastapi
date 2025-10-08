@@ -1,15 +1,14 @@
 from fastapi import FastAPI, HTTPException, status  # type: ignore
 from scalar_fastapi import get_scalar_api_reference  # type: ignore
 from typing import Any
-from enum import Enum
 
-from .schemas import Shipment
+from .schemas import Shipment, ShipmentStatus
 
 app = FastAPI()
 
 shipments = {
     162002: {
-        "weight": 0.6,
+        "weight": 2,
         "content": "glassware",
         "status": "placed",
     },
@@ -68,11 +67,11 @@ def get_shipment(id: int) -> dict[str, Any]:
 
 
 # * In fastapi accepting query para, it is enough just pass the qPara in route handle func
-@app.get("/shipment")
-def get_shipment_by_id(id: int) -> dict[str, Any]:
-    if not id:
-        id = max(shipments.keys())
-        return shipments[id]
+@app.get("/shipment", response_model=Shipment)
+def get_shipment_by_id(id: int):
+    # if not id:
+    #     id = max(shipments.keys())
+    #     return shipments[id]
 
     if id not in shipments:
         raise HTTPException(
@@ -151,13 +150,6 @@ def shipment_update(
 #     shipments[id] = shipment
 
 #     return shipments[id]
-
-
-class ShipmentStatus(str, Enum):
-    placed = "placed"
-    in_transit = "in_transit"
-    out_for_delivery = "out_for_delivery"
-    delivered = "delivered"
 
 
 # * with body
