@@ -5,7 +5,7 @@ from app.database.session import created_db_tables
 
 from fastapi import FastAPI  # type: ignore
 
-from app.api.router import router
+from app.api.router import master_router
 
 
 @asynccontextmanager
@@ -16,7 +16,7 @@ async def lifespan_hanlder(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan_hanlder)
 
-app.include_router(router)
+app.include_router(master_router)
 
 
 @app.get("/scalar", include_in_schema=False)
