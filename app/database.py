@@ -23,7 +23,7 @@ cursor.execute(
 # cursor.execute(
 #     """
 #     INSERT INTO shipment
-#     VALUES  (12701, 'metal gears', 12, 'placed')
+#     VALUES  (12704, 'clothing', 20.8, 'placed')
 #     """
 # )
 # connection.commit()
@@ -39,11 +39,14 @@ cursor.execute(
 # print(result)
 
 # * 3. Update a shipment
+id = 12701
+status = "nowhere"
 cursor.execute(
     """
-        UPDATE shipment SET status = 'in_transit'
-        WHERE id = 12701
-    """
+        UPDATE shipment SET status = :status
+        WHERE id > :id
+    """,
+    {"status": status, "id": id},
 )
 connection.commit()
 
