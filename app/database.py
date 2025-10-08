@@ -7,7 +7,7 @@ cursor = connection.cursor()
 # * 1. Create a table
 cursor.execute(
     """
-    CREATE TABLE shipment (
+    CREATE TABLE IF NOT EXISTS shipment (
         id INTEGER,
         content TEXT,
         weight REAL,
