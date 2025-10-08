@@ -6,16 +6,16 @@ from app.api.schemas.shipment import (  # type: ignore
     ShipmentUpdate,
 )
 from app.database.models import Shipment
-from app.database.session import SessionDep
-from app.services.shipment import ShipmentService
+from .dependencies import ServiceDep
 
-router = APIRouter()
+# Remove dependencies=[ServiceDep] from here!
+router = APIRouter(prefix="/shipment", tags=["Shipment"])
 
 
 # * In fastapi accepting query para, it is enough just pass the qPara in route handle func
-@router.get("/shipment", response_model=ShipmentRead)
-async def get_shipment_by_id(id: int, session: SessionDep):  # type: ignore
-    shipment = await ShipmentService(session).get(id)
+@router.get("/", response_model=ShipmentRead)
+async def get_shipment_by_id(id: int, service: ServiceDep):  # type: ignore
+    shipment = await service.get(id)
 
     if shipment is None:
         raise HTTPException(
@@ -26,17 +26,21 @@ async def get_shipment_by_id(id: int, session: SessionDep):  # type: ignore
 
 
 # * Accept with body
-@router.post("/shipment")
+@router.post("/")
 async def submit_shipment(
     shipment: ShipmentCreate,
-    session: SessionDep,  # type: ignore
+    service: ServiceDep,  # type: ignore
 ) -> Shipment:
-    return await ShipmentService(session).add(shipment)
+    return await service.add(shipment)
 
 
 # * with body
-@router.patch("/shipment", response_model=ShipmentRead)
-async def patch_shipment(id: int, shipment_update: ShipmentUpdate, session: SessionDep):  # type: ignore
+@router.patch("/", response_model=ShipmentRead)
+async def patch_shipment(
+    id: int,
+    shipment_update: ShipmentUpdate,
+    service: ServiceDep,
+):  # type: ignore
     update = shipment_update.model_dump(exclude_none=True)
 
     if not update:
@@ -44,13 +48,13 @@ async def patch_shipment(id: int, shipment_update: ShipmentUpdate, session: Sess
             status_code=status.HTTP_400_BAD_REQUEST, detail="No data provided to update"
         )
 
-    shipment = await ShipmentService(session).update(id, update)
+    shipment = await service.update(id, shipment_update)
 
     return shipment
 
 
-@router.delete("/shipment")
-async def delete_shipment(id: int, session: SessionDep) -> dict[str, str]:  # type: ignore
-    await ShipmentService(session).delete(id)
+@router.delete("/")
+async def delete_shipment(id: int, service: ServiceDep) -> dict[str, str]:  # type: ignore
+    await service.delete(id)
 
     return {"detail": f"Shipment with id #{id} is deleted!"}
