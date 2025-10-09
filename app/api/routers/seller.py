@@ -1,4 +1,6 @@
-from fastapi import APIRouter, Depends  # type: ignore
+from fastapi import APIRouter, Depends, HTTPException, status
+
+from app.uitls import decode_access_token  # type: ignore
 from ..schemas.seller import SellerCreate, SellerRead
 from ..dependencies import SellerServiceDep
 from fastapi.security import OAuth2PasswordRequestForm  # type: ignore
@@ -30,4 +32,14 @@ async def login_seller(
 async def get_dashboard(
     token: Annotated[str, Depends(oauth2_scheme)],
 ):
-    return {"token": token}
+    data = decode_access_token(token)
+
+    if data is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid access token",
+        )
+
+    return {
+        "detail": "Successfully Authenticated",
+    }
