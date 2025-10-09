@@ -1,9 +1,12 @@
+from fastapi import HTTPException, status
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession  # type: ignore
 from app.api.schemas.seller import SellerCreate
 from app.database.models import Seller
 from passlib.context import CryptContext  # type: ignore
 
-password_context = CryptContext(schemes=["bcrypt"])
+
+password_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
 class SellerService:
@@ -12,8 +15,7 @@ class SellerService:
 
     async def add(self, credentials: SellerCreate) -> Seller:
         seller = Seller(
-            **credentials.model_dump(exclude=["password"]),
-            # * Hashed password
+            **credentials.model_dump(exclude={"password"}),
             password_hash=password_context.hash(credentials.password),
         )
         self.session.add(seller)
@@ -21,3 +23,24 @@ class SellerService:
         await self.session.refresh(seller)
 
         return seller
+
+    async def token(self, email, password) -> str:
+        # * Validated the credentials
+        result = await self.session.execute(
+            select(Seller).where(Seller.email == email),
+        )
+
+        seller = result.scalar()
+
+        if seller is None or password_context.verify(
+            password,
+            seller.password_hash,
+        ):
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Email or password is incorrect.",
+            )
+            
+        seller
+
+        return ""
