@@ -13,7 +13,7 @@ router = APIRouter(prefix="/shipment", tags=["Shipment"])
 
 # * In fastapi accepting query para, it is enough just pass the qPara in route handle func
 @router.get("/", response_model=ShipmentRead)
-async def get_shipment_by_id(id: int, service: ShipmentServiceDep):  # type: ignore
+async def get_shipment_by_id(id: int, _: SellerDep, service: ShipmentServiceDep):  # type: ignore
     shipment = await service.get(id)
 
     if shipment is None:
@@ -45,7 +45,8 @@ async def patch_shipment(
 
     if not update:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail="No data provided to update"
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="No data provided to update",
         )
 
     shipment = await service.update(id, shipment_update)
