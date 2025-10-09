@@ -3,9 +3,9 @@ from sqlmodel import SQLModel  # type: ignore
 from typing import Annotated  # type: ignore
 from fastapi import Depends  # type: ignore
 
-from app.config import settings
+from app.config import db_settings
 
-engine = create_async_engine(url=settings.POSTGRES_URL, echo=True)
+engine = create_async_engine(url=db_settings.POSTGRES_URL, echo=True)
 
 
 async def created_db_tables():
