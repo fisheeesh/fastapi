@@ -6,9 +6,8 @@ from app.api.schemas.shipment import (  # type: ignore
     ShipmentUpdate,
 )
 from app.database.models import Shipment
-from ..dependencies import ShipmentServiceDep
+from ..dependencies import SellerDep, ShipmentServiceDep
 
-# Remove dependencies=[ShipmentServiceDep] from here!
 router = APIRouter(prefix="/shipment", tags=["Shipment"])
 
 
@@ -28,6 +27,7 @@ async def get_shipment_by_id(id: int, service: ShipmentServiceDep):  # type: ign
 # * Accept with body
 @router.post("/")
 async def submit_shipment(
+    seller: SellerDep,
     shipment: ShipmentCreate,
     service: ShipmentServiceDep,  # type: ignore
 ) -> Shipment:
