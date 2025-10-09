@@ -1,8 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 
+from app.database.models import Seller
 from app.uitls import decode_access_token  # type: ignore
 from ..schemas.seller import SellerCreate, SellerRead
-from ..dependencies import SellerServiceDep
+from ..dependencies import SellerServiceDep, SessionDep
 from fastapi.security import OAuth2PasswordRequestForm  # type: ignore
 from typing import Annotated
 from app.core.security import oauth2_scheme
@@ -31,7 +32,8 @@ async def login_seller(
 @router.get("/dashboard")
 async def get_dashboard(
     token: Annotated[str, Depends(oauth2_scheme)],
-):
+    session: SessionDep,
+) -> Seller:
     data = decode_access_token(token)
 
     if data is None:
@@ -40,6 +42,15 @@ async def get_dashboard(
             detail="Invalid access token",
         )
 
-    return {
-        "detail": "Successfully Authenticated",
-    }
+    seller = await session.get(
+        Seller,
+        data["user"]["id"],
+    )
+
+    if seller is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Seller not found",
+        )
+
+    return seller
