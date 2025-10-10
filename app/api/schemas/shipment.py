@@ -1,4 +1,5 @@
 from datetime import datetime
+from uuid import UUID
 
 from pydantic import BaseModel  # type: ignore
 from sqlmodel import Field, SQLModel  # type: ignore
@@ -15,7 +16,7 @@ class BaseShipment(SQLModel):
 
 
 class ShipmentRead(BaseShipment):
-    id: int
+    id: UUID
     status: ShipmentStatus
     estimated_delivery: datetime
 

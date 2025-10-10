@@ -1,7 +1,9 @@
-from sqlmodel import Field, Relationship, SQLModel  # type: ignore
+from sqlmodel import Column, Field, Relationship, SQLModel  # type: ignore
 from enum import Enum
 from datetime import datetime
 from pydantic import EmailStr  # type: ignore
+from uuid import uuid4, UUID
+from sqlalchemy.dialects import postgresql
 
 # * We created sql model to define the data in the table that is the fields
 # * as our columns and our api schema
@@ -17,7 +19,13 @@ class ShipmentStatus(str, Enum):
 class Shipment(SQLModel, table=True):
     __tablename__ = "shipment"
 
-    id: int = Field(default=None, primary_key=True)
+    id: UUID = Field(
+        sa_column=Column(
+            postgresql.UUID,
+            default=uuid4(),
+            primary_key=True,
+        )
+    )
     content: str
     weight: float = Field(le=25)
     destination: int
@@ -25,7 +33,7 @@ class Shipment(SQLModel, table=True):
     estimated_delivery: datetime
 
     # * foreign key
-    seller_id: int = Field(foreign_key="seller.id")
+    seller_id: UUID = Field(foreign_key="seller.id")
     # ? relationship -> backpopulates to reflect the changes between tables
     seller: "Seller" = Relationship(
         back_populates="shipments",
@@ -36,7 +44,13 @@ class Shipment(SQLModel, table=True):
 class Seller(SQLModel, table=True):
     __tablename__ = "seller"
 
-    id: int = Field(default=None, primary_key=True)
+    id: UUID = Field(
+        sa_column=Column(
+            postgresql.UUID,
+            default=uuid4(),
+            primary_key=True,
+        )
+    )
     name: str
     email: EmailStr
     password_hash: str
