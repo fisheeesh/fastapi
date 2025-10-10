@@ -23,3 +23,5 @@ venv/
 .DS_Store
 
 guide.txt
+
+.vscode
