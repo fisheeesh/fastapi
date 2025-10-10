@@ -3,15 +3,17 @@ from fastapi import HTTPException
 import jwt
 
 from app.config import security_settings
+from uuid import uuid4
 
 
 def generate_access_token(
     data: dict,
-    expiry: timedelta = timedelta(days=15),
+    expiry: timedelta = timedelta(days=7),
 ) -> str:
     return jwt.encode(
         payload={
             **data,
+            "jti": str(uuid4()),
             "exp": datetime.now(timezone.utc) + expiry,
         },
         algorithm=security_settings.JWT_ALGORITHM,
