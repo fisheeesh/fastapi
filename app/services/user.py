@@ -1,5 +1,5 @@
 from fastapi import HTTPException, status
-from sqlalchemy import select
+from sqlmodel import select
 from app.database.models import User
 from app.uitls import generate_access_token
 from .basae import BaseService
