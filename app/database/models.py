@@ -52,6 +52,7 @@ class Seller(SQLModel, table=True):
         )
     )
     name: str
+    address: int
     email: EmailStr
     password_hash: str
 
