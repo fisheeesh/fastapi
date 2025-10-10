@@ -21,3 +21,5 @@ venv/
 
 # macOS files
 .DS_Store
+
+guide.txt
