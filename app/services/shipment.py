@@ -4,14 +4,15 @@ from sqlalchemy.ext.asyncio import AsyncSession  # type: ignore
 from app.database.models import Seller, Shipment, ShipmentStatus
 from datetime import datetime, timedelta
 from app.api.schemas.shipment import ShipmentCreate, ShipmentUpdate
+from .basae import BaseService
 
 
-class ShipmentService:
+class ShipmentService(BaseService):
     def __init__(self, session: AsyncSession):
-        self.session = session
+        super().__init__(Shipment, session)
 
     async def get(self, id: UUID) -> Shipment | None:
-        return await self.session.get(Shipment, id)
+        return await self._get(id)
 
     async def add(self, shipment_create: ShipmentCreate, seller: Seller) -> Shipment:
         new_shipment = Shipment(
@@ -21,11 +22,7 @@ class ShipmentService:
             seller_id=seller.id,
             # seller=seller
         )
-        self.session.add(new_shipment)
-        await self.session.commit()
-        await self.session.refresh(new_shipment)
-
-        return new_shipment
+        return await self._add(new_shipment)
 
     async def update(
         self, id: UUID, shipment_update: ShipmentUpdate
@@ -35,17 +32,7 @@ class ShipmentService:
             return None
         shipment.sqlmodel_update(shipment_update)
 
-        self.session.add(shipment)
-        await self.session.commit()
-        await self.session.refresh(shipment)
-
-        return shipment
+        return await self._update(shipment)
 
     async def delete(self, id: UUID) -> None:
-        shipment = await self.get(id)
-        if shipment is None:
-            return None
-
-        await self.session.delete(shipment)
-
-        await self.session.commit()
+        await self._delete(self.get(id))
