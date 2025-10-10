@@ -36,6 +36,10 @@ class ShipmentEventService(BaseService):
 
     async def get_latest_event(self, shipment: Shipment):
         timeline = shipment.timeline
+
+        if not timeline:
+            raise ValueError("Shipment has no events in timeline")
+
         timeline.sort(key=lambda event: event.created_at)
 
         return timeline[-1]

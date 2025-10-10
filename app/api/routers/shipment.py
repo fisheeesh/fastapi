@@ -26,7 +26,7 @@ async def get_shipment_by_id(id: UUID, _: SellerDep, service: ShipmentServiceDep
 
 
 # * Accept with body
-@router.post("/")
+@router.post("/", response_model=ShipmentRead)
 async def submit_shipment(
     seller: SellerDep,
     shipment: ShipmentCreate,

@@ -18,7 +18,7 @@ class BaseShipment(SQLModel):
 
 class ShipmentRead(BaseShipment):
     id: UUID
-    seller: Seller
+    # seller: Seller
     timeline: list[ShipmentEvent]
     estimated_delivery: datetime
 
