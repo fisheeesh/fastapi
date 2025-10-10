@@ -1,5 +1,5 @@
 from .routers import shipment, seller
-from fastapi import APIRouter # type: ignore
+from fastapi import APIRouter  # type: ignore
 
 master_router = APIRouter()
 
