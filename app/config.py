@@ -1,3 +1,4 @@
+from typing import Optional
 from pydantic_settings import BaseSettings, SettingsConfigDict  # type: ignore
 
 _base_config = SettingsConfigDict(
@@ -6,25 +7,33 @@ _base_config = SettingsConfigDict(
 
 
 class DatabaseSettings(BaseSettings):
-    POSTGRES_SERVER: str
-    POSTGRES_PORT: int
-    POSTGRES_USER: str
-    POSTGRES_PASSWORD: str
-    POSTGRES_DB: str
+    POSTGRES_SERVER: Optional[str] = None
+    POSTGRES_PORT: Optional[int] = None
+    POSTGRES_USER: Optional[str] = None
+    POSTGRES_PASSWORD: Optional[str] = None
+    POSTGRES_DB: Optional[str] = None
 
-    REDIS_HOST: str
-    REDIS_PORT: int
+    REDIS_HOST: Optional[str] = None
+    REDIS_PORT: Optional[int] = None
 
     model_config = _base_config
 
     @property
-    def POSTGRES_URL(self):
+    def POSTGRES_URL(self) -> str:
+        if (
+            self.POSTGRES_USER is None
+            or self.POSTGRES_PASSWORD is None
+            or self.POSTGRES_SERVER is None
+            or self.POSTGRES_PORT is None
+            or self.POSTGRES_DB is None
+        ):
+            raise ValueError("Database settings are not fully configured")
         return f"postgresql+asyncpg://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}@{self.POSTGRES_SERVER}:{self.POSTGRES_PORT}/{self.POSTGRES_DB}"
 
 
 class SecuritySettings(BaseSettings):
-    JWT_SECRET: str
-    JWT_ALGORITHM: str
+    JWT_SECRET: Optional[str] = None
+    JWT_ALGORITHM: Optional[str] = None
 
     model_config = _base_config
 

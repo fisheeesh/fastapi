@@ -1,4 +1,4 @@
-from sqlmodel import Field, SQLModel  # type: ignore
+from sqlmodel import Field, Relationship, SQLModel  # type: ignore
 from enum import Enum
 from datetime import datetime
 from pydantic import EmailStr  # type: ignore
@@ -24,6 +24,14 @@ class Shipment(SQLModel, table=True):
     status: ShipmentStatus
     estimated_delivery: datetime
 
+    # * foreign key
+    seller_id: int = Field(foreign_key="seller.id")
+    # ? relationship -> backpopulates to reflect the changes between tables
+    seller: "Seller" = Relationship(
+        back_populates="shipments",
+        sa_relationship_kwargs={"lazy": "selectin"},
+    )
+
 
 class Seller(SQLModel, table=True):
     __tablename__ = "seller"
@@ -32,3 +40,12 @@ class Seller(SQLModel, table=True):
     name: str
     email: EmailStr
     password_hash: str
+
+    # ? relationship -> backpopulates to reflect the changes between tables
+    shipments: list[Shipment] = Relationship(
+        back_populates="seller",
+        # ? This will ensure when we access the shipments on the seller field,
+        # ? it actually goes ahead and selects the data from the database
+        # ? that is all the shipments with this seller id adn give use back the same that is the shipments
+        sa_relationship_kwargs={"lazy": "selectin"},
+    )
