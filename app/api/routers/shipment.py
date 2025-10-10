@@ -1,4 +1,5 @@
 from fastapi import APIRouter, HTTPException, status  # type: ignore
+from uuid import UUID
 
 from app.api.schemas.shipment import (  # type: ignore
     ShipmentCreate,
@@ -13,7 +14,7 @@ router = APIRouter(prefix="/shipment", tags=["Shipment"])
 
 # * In fastapi accepting query para, it is enough just pass the qPara in route handle func
 @router.get("/", response_model=ShipmentRead)
-async def get_shipment_by_id(id: int, _: SellerDep, service: ShipmentServiceDep):  # type: ignore
+async def get_shipment_by_id(id: UUID, _: SellerDep, service: ShipmentServiceDep):  # type: ignore
     shipment = await service.get(id)
 
     if shipment is None:
@@ -37,7 +38,7 @@ async def submit_shipment(
 # * with body
 @router.patch("/", response_model=ShipmentRead)
 async def patch_shipment(
-    id: int,
+    id: UUID,
     shipment_update: ShipmentUpdate,
     service: ShipmentServiceDep,
 ):  # type: ignore
@@ -55,7 +56,7 @@ async def patch_shipment(
 
 
 @router.delete("/")
-async def delete_shipment(id: int, service: ShipmentServiceDep) -> dict[str, str]:  # type: ignore
+async def delete_shipment(id: UUID, service: ShipmentServiceDep) -> dict[str, str]:  # type: ignore
     await service.delete(id)
 
     return {"detail": f"Shipment with id #{id} is deleted!"}

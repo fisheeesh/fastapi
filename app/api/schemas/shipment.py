@@ -4,7 +4,7 @@ from uuid import UUID
 from pydantic import BaseModel  # type: ignore
 from sqlmodel import Field, SQLModel  # type: ignore
 
-from app.database.models import ShipmentStatus
+from app.database.models import Seller, ShipmentStatus
 
 # * For api schema, we used it for data validation in the request body and the response data
 
@@ -17,6 +17,7 @@ class BaseShipment(SQLModel):
 
 class ShipmentRead(BaseShipment):
     id: UUID
+    seller: Seller
     status: ShipmentStatus
     estimated_delivery: datetime
 

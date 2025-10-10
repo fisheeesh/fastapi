@@ -1,3 +1,4 @@
+from uuid import UUID
 from sqlalchemy.ext.asyncio import AsyncSession  # type: ignore
 
 from app.database.models import Seller, Shipment, ShipmentStatus
@@ -9,7 +10,7 @@ class ShipmentService:
     def __init__(self, session: AsyncSession):
         self.session = session
 
-    async def get(self, id: int) -> Shipment | None:
+    async def get(self, id: UUID) -> Shipment | None:
         return await self.session.get(Shipment, id)
 
     async def add(self, shipment_create: ShipmentCreate, seller: Seller) -> Shipment:
@@ -26,7 +27,9 @@ class ShipmentService:
 
         return new_shipment
 
-    async def update(self, id: int, shipment_update: ShipmentUpdate) -> Shipment | None:
+    async def update(
+        self, id: UUID, shipment_update: ShipmentUpdate
+    ) -> Shipment | None:
         shipment = await self.get(id)
         if shipment is None:
             return None
@@ -38,7 +41,7 @@ class ShipmentService:
 
         return shipment
 
-    async def delete(self, id: int) -> None:
+    async def delete(self, id: UUID) -> None:
         shipment = await self.get(id)
         if shipment is None:
             return None
