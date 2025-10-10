@@ -5,7 +5,8 @@ from app.database.models import Seller, Shipment, ShipmentStatus
 from datetime import datetime, timedelta
 from app.api.schemas.shipment import ShipmentCreate, ShipmentUpdate
 from .delivery_partner import DeliveryPartnerService
-from .basae import BaseService
+from .base import BaseService
+from fastapi import HTTPException, status
 
 
 class ShipmentService(BaseService):
@@ -24,7 +25,8 @@ class ShipmentService(BaseService):
             seller_id=seller.id,
             # seller=seller
         )
-        await self.partner_service.assign_shipment(new_shipment)
+        partner = await self.partner_service.assign_shipment(new_shipment)
+        new_shipment.delivery_partner_id = partner.id
         return await self._add(new_shipment)
 
     async def update(
@@ -38,4 +40,9 @@ class ShipmentService(BaseService):
         return await self._update(shipment)
 
     async def delete(self, id: UUID) -> None:
-        await self._delete(self.get(id))
+        shipment = await self.get(id)
+        if shipment is None:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND, detail="Shipment not found"
+            )
+        await self._delete(shipment)

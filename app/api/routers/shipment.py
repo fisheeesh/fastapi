@@ -7,7 +7,7 @@ from app.api.schemas.shipment import (  # type: ignore
     ShipmentUpdate,
 )
 from app.database.models import Shipment
-from ..dependencies import SellerDep, ShipmentServiceDep
+from ..dependencies import DeliveryPartnerDep, SellerDep, ShipmentServiceDep
 
 router = APIRouter(prefix="/shipment", tags=["Shipment"])
 
@@ -37,9 +37,10 @@ async def submit_shipment(
 
 # * with body
 @router.patch("/", response_model=ShipmentRead)
-async def patch_shipment(
+async def update_shipment(
     id: UUID,
     shipment_update: ShipmentUpdate,
+    partner: DeliveryPartnerDep,
     service: ShipmentServiceDep,
 ):  # type: ignore
     update = shipment_update.model_dump(exclude_none=True)

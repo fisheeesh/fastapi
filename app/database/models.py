@@ -23,7 +23,7 @@ class Shipment(SQLModel, table=True):
     id: UUID = Field(
         sa_column=Column(
             postgresql.UUID,
-            default=uuid4(),
+            default=uuid4,
             primary_key=True,
         )
     )
@@ -56,7 +56,6 @@ class Shipment(SQLModel, table=True):
 
 class User(SQLModel):
     name: str
-    address: int
     email: EmailStr
     password_hash: str = Field(exclude=True)
 
@@ -67,7 +66,7 @@ class Seller(User, table=True):
     id: UUID = Field(
         sa_column=Column(
             postgresql.UUID,
-            default=uuid4(),
+            default=uuid4,
             primary_key=True,
         )
     )
@@ -94,7 +93,7 @@ class DeliveryPartner(User, table=True):
     id: UUID = Field(
         sa_column=Column(
             postgresql.UUID,
-            default=uuid4(),
+            default=uuid4,
             primary_key=True,
         )
     )
@@ -119,13 +118,13 @@ class DeliveryPartner(User, table=True):
     )
 
     @property
-    def active_shipment(self):
-        [
+    def active_shipments(self):
+        return [
             shipment
             for shipment in self.shipments
-            if shipment.status == ShipmentStatus.delivered
+            if shipment.status != ShipmentStatus.delivered
         ]
 
     @property
     def current_handling_capacity(self):
-        return self.max_handling_capacity - len(self.active_shipment)
+        return self.max_handling_capacity - len(self.active_shipments)

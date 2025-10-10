@@ -2,7 +2,7 @@ from fastapi import HTTPException, status
 from sqlmodel import select
 from app.database.models import User
 from app.uitls import generate_access_token
-from .basae import BaseService
+from .base import BaseService
 from sqlalchemy.ext.asyncio import AsyncSession  # type: ignore
 from passlib.context import CryptContext  # type: ignore
 
@@ -21,7 +21,7 @@ class UserService(BaseService):
             password_hash=password_context.hash(data["password"]),
         )
 
-        return self._add(user)
+        return await self._add(user)
 
     async def _get_by_email(self, email) -> User | None:
         return await self.session.scalar(
@@ -30,7 +30,7 @@ class UserService(BaseService):
 
     async def _generate_token(self, email, password) -> str:
         # * Validated the credentials
-        user = self._get_by_email(email)
+        user = await self._get_by_email(email)
 
         if user is None or not password_context.verify(
             password,

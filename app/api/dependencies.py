@@ -8,6 +8,7 @@ from app.core.security import oauth2_scheme_seller, oauth2_scheme_delivery_partn
 from app.database.models import DeliveryPartner, Seller
 from app.database.redis import is_jti_blacklisted
 from app.database.session import get_session
+from app.services.delivery_partner import DeliveryPartnerService
 from app.services.seller import SellerService
 from app.services.shipment import ShipmentService
 from app.uitls import decode_access_token
@@ -79,12 +80,17 @@ async def get_current_delivery_partner(
 
 # ? Shipment service dep
 def get_shipment_service(session: SessionDep):  # type: ignore
-    return ShipmentService(session)
+    return ShipmentService(session, DeliveryPartnerService(session))
 
 
 # ? Seller service dep
 def get_seller_service(session: SessionDep):  # type: ignore
     return SellerService(session)
+
+
+# ? Delivery partner service dep
+def get_delivery_partner_service(session: SessionDep):
+    return DeliveryPartnerService(session)
 
 
 # ? Seller Dep
@@ -110,4 +116,10 @@ ShipmentServiceDep = Annotated[
 SellerServiceDep = Annotated[
     SellerService,
     Depends(get_seller_service),
+]
+
+# ? Delivery partner service dep annotation
+DeliveryPartnerServiceDep = Annotated[
+    DeliveryPartnerService,
+    Depends(get_delivery_partner_service),
 ]
