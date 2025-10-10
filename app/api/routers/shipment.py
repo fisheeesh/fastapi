@@ -31,7 +31,7 @@ async def submit_shipment(
     shipment: ShipmentCreate,
     service: ShipmentServiceDep,  # type: ignore
 ) -> Shipment:
-    return await service.add(shipment)
+    return await service.add(shipment, seller)
 
 
 # * with body
