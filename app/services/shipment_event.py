@@ -1,3 +1,4 @@
+from typing import Optional
 from app.database.models import Shipment, ShipmentEvent, ShipmentStatus
 from app.services.base import BaseService
 
@@ -9,9 +10,9 @@ class ShipmentEventService(BaseService):
     async def add(
         self,
         shipment: Shipment,
-        location: int = None,
-        status: ShipmentStatus = None,
-        description: str = None,
+        location: Optional[int] = None,
+        status: Optional[ShipmentStatus] = None,
+        description: Optional[str] = None,
     ) -> ShipmentEvent:
         if not location or not status:
             last_event = await self.get_latest_event(shipment)

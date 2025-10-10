@@ -35,7 +35,6 @@ async def submit_shipment(
     return await service.add(shipment, seller)
 
 
-# * with body
 @router.patch("/", response_model=ShipmentRead)
 async def update_shipment(
     id: UUID,
@@ -51,9 +50,7 @@ async def update_shipment(
             detail="No data provided to update",
         )
 
-    shipment = await service.update(id, shipment_update)
-
-    return shipment
+    return await service.update(id, shipment_update, partner)
 
 
 @router.delete("/")
