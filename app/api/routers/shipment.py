@@ -1,6 +1,8 @@
 from fastapi import APIRouter, HTTPException, status  # type: ignore
 from uuid import UUID
 
+from fastapi.responses import HTMLResponse
+
 from app.api.schemas.shipment import (  # type: ignore
     ShipmentCreate,
     ShipmentRead,
@@ -14,7 +16,7 @@ router = APIRouter(prefix="/shipment", tags=["Shipment"])
 
 # * In fastapi accepting query para, it is enough just pass the qPara in route handle func
 @router.get("/", response_model=ShipmentRead)
-async def get_shipment_by_id(id: UUID, _: SellerDep, service: ShipmentServiceDep):  # type: ignore
+async def get_shipment_by_id(id: UUID, service: ShipmentServiceDep):  # type: ignore
     shipment = await service.get(id)
 
     if shipment is None:
@@ -25,7 +27,17 @@ async def get_shipment_by_id(id: UUID, _: SellerDep, service: ShipmentServiceDep
     return shipment
 
 
-# * Accept with body
+# * Tracking details of shipment
+@router.get("/track")
+async def get_tracking(id: UUID, service: ShipmentServiceDep):
+    shipment = await service.get(id)
+
+    return HTMLResponse(
+        content=f"<body> <h1>Order #{shipment.id}: {shipment.status}</h1> </body>"
+    )
+
+
+# * Create new shipment
 @router.post("/", response_model=ShipmentRead)
 async def submit_shipment(
     seller: SellerDep,
