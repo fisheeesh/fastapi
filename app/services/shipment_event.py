@@ -73,8 +73,8 @@ class ShipmentEventService(BaseService):
             case ShipmentStatus.placed:
                 subject = "Your Order is Shipped 📦"
                 context["id"] = shipment.id
-                context["seller"] = shipment.seller.name
-                context["partner"] = shipment.delivery_partner.name
+                context["seller"] = shipment.seller.name  # type: ignore
+                context["partner"] = shipment.delivery_partner.name  # type: ignore
                 template_name = "mail_placed.html"
 
             case ShipmentStatus.out_for_delivery:
@@ -83,7 +83,7 @@ class ShipmentEventService(BaseService):
 
             case ShipmentStatus.delivered:
                 subject = "Your Order is Delivered 🚚 "
-                context["seller"] = shipment.seller.name
+                context["seller"] = shipment.seller.name  # type: ignore
                 template_name = "mail_delivered.html"
 
             case ShipmentStatus.cancelled:

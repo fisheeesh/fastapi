@@ -1,7 +1,7 @@
-from fastapi import APIRouter, HTTPException, status  # type: ignore
 from uuid import UUID
 
-from fastapi.responses import HTMLResponse
+from fastapi import APIRouter, HTTPException, Request, status  # type: ignore
+from fastapi.templating import Jinja2Templates
 
 from app.api.schemas.shipment import (  # type: ignore
     ShipmentCreate,
@@ -9,9 +9,13 @@ from app.api.schemas.shipment import (  # type: ignore
     ShipmentUpdate,
 )
 from app.database.models import Shipment
+from app.uitls import TEMPLATE_DIR
+
 from ..dependencies import DeliveryPartnerDep, SellerDep, ShipmentServiceDep
 
 router = APIRouter(prefix="/shipment", tags=["Shipment"])
+
+templates = Jinja2Templates(TEMPLATE_DIR)
 
 
 # * In fastapi accepting query para, it is enough just pass the qPara in route handle func
@@ -29,11 +33,18 @@ async def get_shipment_by_id(id: UUID, service: ShipmentServiceDep):  # type: ig
 
 # * Tracking details of shipment
 @router.get("/track")
-async def get_tracking(id: UUID, service: ShipmentServiceDep):
+async def get_tracking(request: Request, id: UUID, service: ShipmentServiceDep):
     shipment = await service.get(id)
 
-    return HTMLResponse(
-        content=f"<body> <h1>Order #{shipment.id}: {shipment.status}</h1> </body>"
+    context = shipment.model_dump()
+    context["status"] = shipment.status
+    context["partner"] = shipment.delivery_partner.name
+    context["timeline"] = shipment.timeline
+
+    return templates.TemplateResponse(
+        request=request,
+        name="track.html",
+        context=context,
     )
 
 

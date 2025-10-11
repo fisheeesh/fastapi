@@ -55,4 +55,4 @@ class NotificationSettings(BaseSettings):
 
 db_settings = DatabaseSettings()
 security_settings = SecuritySettings()
-notification_settings = NotificationSettings()
+notification_settings = NotificationSettings()  # type: ignore

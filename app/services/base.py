@@ -10,7 +10,7 @@ class BaseService:
         self.session = session
 
     async def _get(self, id: UUID):
-        return await self.session.get(self.model, id)
+        return await self.session.get(self.model, id) # type: ignore
 
     async def _add(self, entity: SQLModel):
         self.session.add(entity)

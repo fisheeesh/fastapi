@@ -7,7 +7,7 @@ from app.config import security_settings
 from uuid import uuid4
 
 APP_DIR = Path(__file__).resolve().parent
-TEMPLATE_DIR = APP_DIR/"templates"
+TEMPLATE_DIR = APP_DIR / "templates"
 
 
 def generate_access_token(
@@ -30,7 +30,7 @@ def decode_access_token(token: str) -> dict | None:
         return jwt.decode(
             jwt=token,
             key=security_settings.JWT_SECRET,
-            algorithms=[security_settings.JWT_ALGORITHM],
+            algorithms=[security_settings.JWT_ALGORITHM],  # type: ignore
         )
 
     except jwt.ExpiredSignatureError:
