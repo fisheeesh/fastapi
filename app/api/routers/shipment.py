@@ -40,6 +40,7 @@ async def get_tracking(request: Request, id: UUID, service: ShipmentServiceDep):
     context["status"] = shipment.status
     context["partner"] = shipment.delivery_partner.name
     context["timeline"] = shipment.timeline
+    context['timeline'].reverse()
 
     return templates.TemplateResponse(
         request=request,
