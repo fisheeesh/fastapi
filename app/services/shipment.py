@@ -17,7 +17,7 @@ class ShipmentService(BaseService):
         partner_service: DeliveryPartnerService,
         event_service: ShipmentEventService,
     ):
-        super().__init__(Shipment, session)
+        super().__init__(Shipment, session)  # type: ignore
         self.partner_service = partner_service
         self.event_service = event_service
 
@@ -74,13 +74,21 @@ class ShipmentService(BaseService):
 
         update = shipment_update.model_dump(exclude_none=True)
 
+        # Update estimated_delivery on the shipment if provided
         if shipment_update.estimated_delivery:
             shipment.estimated_delivery = shipment_update.estimated_delivery
 
-        if len(update) > 1 or not shipment_update.estimated_delivery:
+        # Create an event only for location and status updates (not estimated_delivery)
+        event_data = {
+            k: v
+            for k, v in update.items()
+            if k in ["location", "status", "description"]
+        }
+
+        if event_data:
             await self.event_service.add(
                 shipment=shipment,
-                **update,
+                **event_data,
             )
 
         return await self._update(shipment)
