@@ -28,6 +28,9 @@ class Shipment(SQLModel, table=True):
             primary_key=True,
         )
     )
+
+    client_contact_email: EmailStr
+    client_contact_phone: int | None
     content: str
     weight: float = Field(le=25)
     destination: int
@@ -114,8 +117,8 @@ class Seller(User, table=True):
         )
     )
 
-    address: str | None = Field(default=None)
-    zip_code: int | None = Field(default=None)
+    address: str
+    zip_code: int
 
     # ? relationship -> backpopulates to reflect the changes between tables
     shipments: list[Shipment] = Relationship(

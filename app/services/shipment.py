@@ -39,6 +39,7 @@ class ShipmentService(BaseService):
             seller_id=seller.id,
             # seller=seller
         )
+        # * Assign delivery partner to the shipment
         partner = await self.partner_service.assign_shipment(new_shipment)
         new_shipment.delivery_partner_id = partner.id
 

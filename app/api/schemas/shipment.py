@@ -2,7 +2,7 @@ from datetime import datetime
 from email.policy import default
 from uuid import UUID
 
-from pydantic import BaseModel  # type: ignore
+from pydantic import BaseModel, EmailStr  # type: ignore
 from sqlmodel import Field, SQLModel  # type: ignore
 
 from app.database.models import Seller, ShipmentEvent, ShipmentStatus
@@ -24,7 +24,8 @@ class ShipmentRead(BaseShipment):
 
 
 class ShipmentCreate(BaseShipment):
-    pass
+    client_contact_email: EmailStr
+    client_contact_phone: int | None = Field(default=None)
 
 
 class ShipmentUpdate(BaseModel):
