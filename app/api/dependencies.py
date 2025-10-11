@@ -1,7 +1,7 @@
 from typing import Annotated
 from uuid import UUID
 
-from fastapi import Depends, HTTPException, status  # type: ignore
+from fastapi import BackgroundTasks, Depends, HTTPException, status  # type: ignore
 from sqlalchemy.ext.asyncio import AsyncSession  # type: ignore
 
 from app.core.security import oauth2_scheme_seller, oauth2_scheme_delivery_partner
@@ -80,11 +80,11 @@ async def get_current_delivery_partner(
 
 
 # ? Shipment service dep
-def get_shipment_service(session: SessionDep):  # type: ignore
+def get_shipment_service(session: SessionDep, tasks: BackgroundTasks):  # type: ignore
     return ShipmentService(
         session,
         DeliveryPartnerService(session),
-        ShipmentEventService(session),
+        ShipmentEventService(session, tasks),
     )
 
 
