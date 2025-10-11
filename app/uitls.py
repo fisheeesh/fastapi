@@ -1,9 +1,13 @@
 from datetime import datetime, timedelta, timezone
+from pathlib import Path
 from fastapi import HTTPException
 import jwt
 
 from app.config import security_settings
 from uuid import uuid4
+
+APP_DIR = Path(__file__).resolve().parent
+TEMPLATE_DIR = APP_DIR/"templates"
 
 
 def generate_access_token(

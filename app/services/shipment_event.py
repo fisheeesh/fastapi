@@ -62,20 +62,36 @@ class ShipmentEventService(BaseService):
                 return f"scanned at {location}"
 
     async def _notify(self, shipment: Shipment, status: ShipmentStatus):
+        if status == ShipmentStatus.in_transit:
+            return
+
+        subject: str
+        context = {}
+        template_name: str
+
         match status:
             case ShipmentStatus.placed:
-                await self.notification_service.send_email(
-                    recipients=[shipment.client_contact_email],
-                    subject="Your Order is Shipped 📦 ",
-                    body=f"Your order with {shipment.seller.name} "
-                    f"is picked up by {shipment.delivery_partner.name}"
-                    " and is on its way to you.",
-                )
+                subject = "Your Order is Shipped 📦 "
+                context["seller"] = shipment.seller.name
+                context["partner"] = shipment.delivery_partner.name
+                template_name = "mail_placed.html"
+
             case ShipmentStatus.out_for_delivery:
-                await self.notification_service.send_email(
-                    recipients=[shipment.client_contact_email],
-                    subject="Your Order is Arriving  🛩️",
-                    body="Our delivery executive is on their way"
-                    "to delivery your order. Please ensure you are available"
-                    " to recieve the same.",
-                )
+                subject = "Your Order is Arriving Soon 🛩️"
+                template_name = "mail_out_for_delivery.html"
+
+            case ShipmentStatus.delivered:
+                subject = "Your Order is Delivered 🚚 "
+                context["seller"] = shipment.seller.name
+                template_name = "mail_delivered.html"
+
+            case ShipmentStatus.cancelled:
+                subject = "Your Order is Cancelled ❌"
+                template_name = "mail_cancelled.html"
+
+        await self.notification_service.send_email_with_template(
+            recipients=[shipment.client_contact_email],
+            subject=subject,
+            context=context,
+            template_name=template_name,
+        )
